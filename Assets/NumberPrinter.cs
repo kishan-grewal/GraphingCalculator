@@ -1,20 +1,24 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 
 public class NumberPrinter : MonoBehaviour
 {
-    private int vNumber = 22;
-    private float vRangeC = 22f;
+    public GameObject textPrefab; // Reference to your Text prefab.
 
-    private int hNumber = 12;
-    private float hRangeC = 12f;
+    private int vNumber = 21;
+    private float vRangeC = 21f;
+    private Text[] vNums;
 
-    public GameObject[] vNumbers = new GameObject[22];
-    public GameObject[] hNumbers = new GameObject[12];
+    private int hNumber = 11;
+    private float hRangeC = 11f;
+    private Text[] hNums;
+
+    private float offSetC = 0.5f;
 
     public Camera cam;
     private Transform camT;
@@ -26,13 +30,21 @@ public class NumberPrinter : MonoBehaviour
 
     private void Start()
     {
+        vNums = new Text[vNumber];
+        hNums = new Text[hNumber];
+
+        // Create and position the text objects.
         for (int i = 0; i < vNumber; i++)
         {
-            vNumbers[i].AddComponent<Text>();
+            GameObject newText = Instantiate(textPrefab, transform);
+            newText.transform.position = Vector3.zero;
+            vNums[i] = newText.GetComponent<Text>();
         }
         for (int i = 0; i < hNumber; i++)
         {
-            hNumbers[i].AddComponent<Text>();
+            GameObject newText = Instantiate(textPrefab, transform);
+            newText.transform.position = Vector3.zero;
+            hNums[i] = newText.GetComponent<Text>();
         }
     }
 
@@ -45,6 +57,7 @@ public class NumberPrinter : MonoBehaviour
         float camY = camT.position.y;
         float vRange = vRangeC * mult;
         float hRange = hRangeC * mult;
+        float offSet = offSetC * cam.orthographicSize;
 
         int count = 0;
         float step = (2 * vRange) / vNumber;
@@ -52,9 +65,10 @@ public class NumberPrinter : MonoBehaviour
         float B = A - (int)(vRange / step) * step;
         for (float x = B; count < vNumber; x += step)
         {
-            Text current = vNumbers[count].GetComponent<Text>();
-            current.text = ((count-10) * mult).ToString();
-            current.transform.position = new Vector3(x - 0.1f, -0.1f);
+            vNums[count].text = (x).ToString();
+            vNums[count].transform.position = new Vector3(x - step/5, -step/5);
+
+            count++;
         }
 
         count = 0;
@@ -63,9 +77,10 @@ public class NumberPrinter : MonoBehaviour
         B = A - (int)(hRange / step) * step;
         for (float y = B; count < hNumber; y += step)
         {
-            Text current = hNumbers[count].GetComponent<Text>();
-            current.text = ((count - 5) * mult).ToString();
-            current.transform.position = new Vector3(-0.1f, y - 0.1f);
+            hNums[count].text = (y).ToString();
+            hNums[count].transform.position = new Vector3(-step / 5, y - step / 5);
+
+            count++;
         }
     }
 }
